@@ -1,0 +1,12 @@
+{
+  "source": "MOCK_API_DEMO",
+  "isLiveSap": false,
+  "equipmentNo": "DEMO-10001234",
+  "description": "Circuit Breaker",
+  "plant": "DEMO-PLANT-01",
+  "functionalLocation": "DEMO-SUBSTATION/BAY-01",
+  "category": "High-voltage switchgear",
+  "status": "Demo - In Service",
+  "lastInspection": "15 Sep 2026 (sample)",
+  "maintenanceNote": "Routine inspection due (sample)"
+}

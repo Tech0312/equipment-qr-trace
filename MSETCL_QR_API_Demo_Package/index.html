@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MSETCL Equipment QR — API Demo</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#142235;background:#f3f6fa}
+*{box-sizing:border-box}body{margin:0;padding:16px}.wrap{max-width:760px;margin:auto}
+header{background:#123b63;color:white;padding:22px;border-radius:16px 16px 0 0}
+.eyebrow{font-size:12px;letter-spacing:1px;font-weight:bold}h1{font-size:24px;margin:9px 0}
+header p{margin:0;line-height:1.5;color:#e4edf6}
+.notice{background:#fff4d6;color:#6c4b00;border:1px solid #efd88a;padding:12px;border-radius:10px;margin:14px 0;font-size:13px;line-height:1.5}
+.card{background:white;border:1px solid #dbe3ec;border-radius:14px;padding:17px;margin:14px 0}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+button{border:0;background:#155da8;color:white;padding:12px 15px;border-radius:9px;font-size:15px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6}.status{font-size:13px;color:#52657a;line-height:1.5;margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+.field{background:#f6f8fb;padding:12px;border-radius:9px;overflow-wrap:anywhere}.label{color:#64748b;font-size:12px;margin-bottom:5px}.value{font-weight:bold}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#111d2c;color:#e1f0ff;padding:14px;border-radius:10px;font-size:12px;line-height:1.5;overflow:auto}
+h2{font-size:18px;margin:0 0 10px}h3{font-size:15px;margin:0 0 10px}
+.small{font-size:12px;color:#64748b;line-height:1.5}footer{text-align:center;font-size:12px;color:#64748b;padding:12px}
+@media(max-width:480px){body{padding:9px}header{padding:17px}h1{font-size:21px}.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div class="eyebrow">EQUIPMENT INFORMATION · API CONCEPT DEMO</div><h1>Substation Equipment QR</h1><p>QR scan → GET request → JSON response → equipment details</p></header>
+<div class="notice"><b>DEMO ONLY:</b> Yeh ek mock API demonstration hai. Data sample JSON file se aata hai; MSETCL SAP se connection nahi hai. Isse live SAP integration ka claim na karein.</div>
+<section class="card">
+ <div class="row"><div><h2>Equipment details</h2><div class="small">Equipment ID: DEMO-10001234</div></div><button id="loadBtn">Call Demo API</button></div>
+ <div id="status" class="status">Button dabakar API request ka demo dekhein. Page khulne par details automatically load karne ki koshish bhi hogi.</div>
+ <div id="details" class="grid"></div>
+</section>
+<section class="card">
+ <h3>API request</h3>
+ <pre id="request">GET ./equipment.json
+Accept: application/json</pre>
+ <h3>API response (JSON)</h3>
+ <pre id="response">Abhi request nahi bheji gayi.</pre>
+ <div class="small">Technical note: Is prototype mein browser HTTP GET se JSON resource fetch karta hai. Yeh API request/response ka concept dikhata hai, lekin full backend API nahi hai.</div>
+</section>
+<section class="card"><h3>MSETCL SAP integration mein future flow</h3>
+ <p class="small">Mobile webpage → secure backend → MSETCL-approved SAP API/OData service → authorized equipment fields → webpage. Authentication, access controls aur test approval MSETCL IT/ERP team ke saath set up honge.</p>
+</section>
+<footer>Fictional sample data · Not an official MSETCL application</footer>
+</div>
+<script>
+const fields = [
+ ["Equipment Number","equipmentNo"],["Description","description"],["Plant","plant"],
+ ["Functional Location","functionalLocation"],["Category","category"],["Status","status"],
+ ["Last Inspection","lastInspection"],["Maintenance Note","maintenanceNote"]
+];
+async function loadDemoApi(){
+ const btn=document.getElementById('loadBtn'), status=document.getElementById('status');
+ btn.disabled=true; status.textContent='Request bhej rahe hain: GET ./equipment.json ...';
+ document.getElementById('request').textContent='GET ./equipment.json\\nAccept: application/json';
+ try{
+   const r=await fetch('./equipment.json',{cache:'no-store'});
+   if(!r.ok) throw new Error('HTTP status '+r.status);
+   const data=await r.json();
+   document.getElementById('response').textContent=JSON.stringify(data,null,2);
+   document.getElementById('details').innerHTML=fields.map(([label,key])=>'<div class="field"><div class="label">'+label+'</div><div class="value"></div></div>').join('');
+   [...document.querySelectorAll('#details .value')].forEach((el,i)=>el.textContent=data[fields[i][1]] ?? 'Not available');
+   status.textContent='Success: HTTP '+r.status+' — JSON response receive hua aur screen par render hua. Source: mock demo JSON, live SAP nahi.';
+ }catch(e){
+   status.textContent='Request fail hui. Confirm karein ki index.html aur equipment.json dono same published folder mein hain, phir page refresh karein. Error: '+e.message;
+   document.getElementById('response').textContent='Request failed: '+e.message;
+ }finally{btn.disabled=false;}
+}
+document.getElementById('loadBtn').addEventListener('click',loadDemoApi);
+loadDemoApi();
+</script>
+</body></html>
